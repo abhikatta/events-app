@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar";
-import ThemeProvider from "./provider/themeProvider";
-import ThemeContext from "./provider/themeContext";
+import ThemeProvider from "./components/provider/themeProvider";
+import ThemeContext from "./components/provider/themeContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,7 +25,9 @@ export default function RootLayout({
                         <div className="flex w-auto flex-col">
                             <div className="flex flex-row min-h-screen bg-bg text-color">
                                 <Navbar />
-                                <div>{children}</div>
+                                <div className="flex flex-row w-full justify-center items-center">
+                                    {children}
+                                </div>
                             </div>
                         </div>
                     </ThemeContext>

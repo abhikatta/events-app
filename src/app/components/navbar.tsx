@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-
+import { Tooltip, Button, useCalendarContext } from "@nextui-org/react";
+import { usePathname } from "next/navigation";
+import ThemeToggle from "./themeToggle/themToggle";
 const Navbar = () => {
-    const route = useSearchParams();
+    const pathname = usePathname();
     const navElements = [
         {
             path: "/",
@@ -16,18 +17,22 @@ const Navbar = () => {
     ];
     return (
         <section className="min-h-[80vh] flex w-[7rem] bg-softBg text-color justify-center items-center rounded-lg">
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col items-center gap-3">
+                <ThemeToggle />
                 {navElements.map((item, index) => {
+                    console.log(item.path);
                     return (
-                        <Link
-                            href={item.path}
-                            className={`${
-                                route.has(item.path)
-                                    ? " underline underline-softBg underline-offset-2"
-                                    : ""
-                            }`}
-                            key={index}>
-                            {item.name}
+                        <Link href={item.path} key={index}>
+                            <Tooltip content={item.name}>
+                                <Button
+                                    className={
+                                        pathname === item.path
+                                            ? ""
+                                            : `bg-softBg`
+                                    }>
+                                    {item.name}
+                                </Button>
+                            </Tooltip>
                         </Link>
                     );
                 })}
