@@ -3,12 +3,19 @@ import { useEffect, useState } from "react";
 import { Calendar, DateValue, Input } from "@nextui-org/react";
 import { today, getLocalTimeZone } from "@internationalized/date";
 
+interface Priority {
+    name: "Low" | "Medium" | "High";
+    value: "low" | "medium" | "high";
+}
+interface Event {
+    title: string;
+    description?: string;
+    priority: Priority;
+}
 const Page = () => {
-    const [date, setDate] = useState<DateValue>();
-    const [eventTitle, setEventTitle] = useState("");
-    useEffect(() => {
-        setDate(today(getLocalTimeZone()));
-    }, []);
+    const [date, setDate] = useState<DateValue>(today(getLocalTimeZone()));
+    const [event, setEvent] = useState<Event | null>(null);
+
     return (
         <>
             <div className="flex flex-row gap-10">
@@ -25,11 +32,16 @@ const Page = () => {
                         size="md"
                         width={300}
                         variant="underlined"
-                        onChange={(e) => setEventTitle(e.target.value)}
                         label="Create an event"
                         labelPlacement="outside"
                     />
-                    <p>{eventTitle}</p>
+                    <Input
+                        size="md"
+                        width={300}
+                        variant="underlined"
+                        label="Create an event"
+                        labelPlacement="outside"
+                    />
                 </div>
             </div>
         </>
