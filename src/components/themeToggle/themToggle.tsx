@@ -1,6 +1,6 @@
 "use client";
 import { useContext } from "react";
-import { themeContext } from "../provider/themeProvider";
+import { themeContext } from "../../provider/themeProvider";
 import { Switch } from "@nextui-org/react";
 import { MoonIcon, SunIcon } from "./icons";
 const ThemeToggle = () => {

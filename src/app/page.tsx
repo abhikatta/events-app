@@ -4,36 +4,30 @@ import { Calendar, DateValue, Button, useDisclosure } from "@nextui-org/react";
 import { today, getLocalTimeZone } from "@internationalized/date";
 import { Event } from "@prisma/client";
 import EventModal from "../components/EventModal/EventModal";
-import { useSearchParams } from "next/navigation";
 
 const Page = () => {
     const [date, setDate] = useState<DateValue>(today(getLocalTimeZone()));
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const [event, setEvent] = useState<Event[] | null>(null);
+    const [events, setEvents] = useState<Event[] | null>(null);
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
     useEffect(() => {
-        setEvent([
-            {
-                id: "1",
-                slug: "something",
-                authorId: "sdasd",
-                createdAt: new Date(),
-                title: "get milk",
-                description: "get milllk",
-                priorityId: "low",
-            },
-            {
-                id: "2",
-                slug: "something2",
-                authorId: "sdasd3",
-                createdAt: new Date(),
-                title: "get milk 1",
-                description: "get milllk2 ",
-                priorityId: "medium",
-            },
-        ]);
-    }, []);
+        const getEvents = async () => {
+            try {
+                const res = await fetch(
+                    `http://localhost:3000/api/events/${date}`,
+                    {
+                        cache: "no-cache",
+                    }
+                );
+                const events: Event[] = await res.json();
+                setEvents(events);
+            } catch (error) {
+                throw new Error(`Couldn't fetch data!", ${error}`);
+            }
+        };
+        getEvents();
+    }, [date]);
     return (
         <>
             <div className="flex md:flex-row flex-col h-auto md:gap-0 gap-10 min-w-full md:justify-evenly items-center justify-center">
@@ -47,10 +41,11 @@ const Page = () => {
                 </div>
                 <div className="flex flex-col justify-center items-center w-max h-auto gap-10">
                     <h2 className="text-3xl">{date?.toString()}</h2>
-                    {event?.map((item) => {
+                    {events?.map((item) => {
                         return (
                             <Button
                                 key={item.id}
+                                variant="ghost"
                                 onPress={() => {
                                     setSelectedEvent(item);
                                     onOpen();
@@ -60,13 +55,13 @@ const Page = () => {
                             </Button>
                         );
                     })}
-                    {selectedEvent && (
-                        <EventModal
-                            isOpen={isOpen}
-                            onOpenChange={onOpenChange}
-                            event={selectedEvent}
-                        />
-                    )}
+                    <Button onClick={onOpen}>Create a new event</Button>
+
+                    <EventModal
+                        isOpen={isOpen}
+                        onOpenChange={onOpenChange}
+                        event={selectedEvent}
+                    />
                 </div>
             </div>
         </>

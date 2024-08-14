@@ -13,7 +13,7 @@ const EventModal = ({
     isOpen,
     onOpenChange,
 }: {
-    event: Event;
+    event: Event | null;
     isOpen: boolean;
     onOpenChange: () => void;
 }) => {
@@ -31,7 +31,7 @@ const EventModal = ({
                                 <Input
                                     label="Title"
                                     labelPlacement="outside"
-                                    defaultValue={event.title}
+                                    defaultValue={event?.title || ""}
                                     variant="underlined"
                                 />
                             </ModalHeader>
@@ -39,13 +39,13 @@ const EventModal = ({
                                 <Input
                                     label="Description"
                                     labelPlacement="outside"
-                                    defaultValue={event.description}
+                                    defaultValue={event?.description || ""}
                                     variant="underlined"
                                 />
                                 <Input
                                     label="Title"
                                     labelPlacement="outside"
-                                    defaultValue={event.slug}
+                                    defaultValue={event?.slug || ""}
                                     variant="underlined"
                                 />
                             </ModalBody>
