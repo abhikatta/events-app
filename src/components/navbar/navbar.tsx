@@ -1,13 +1,13 @@
 import { Button } from "@nextui-org/react";
-import { auth, signIn } from "../../../../auth";
-import NavElements from "./elements";
+import { auth, signIn } from "../../../auth";
+import NavElements from "./navElements";
 import ProfileDropdown from "./profileDropdown";
 
 const Navbar = async () => {
     const user = (await auth())?.user;
     return (
-        <section className="min-h-[80vh] flex w-[7rem] bg-softBg text-color justify-center items-center rounded-lg">
-            <div className="absolute w-auto right-10 top-10">
+        <section className="md:min-h-[80vh] h-auto flex w-[7.5rem] bg-softBg text-color justify-center items-center rounded-lg rounded-r-[50%]">
+            <div className="absolute md:flex hidden w-auto top-10">
                 {user?.image ? (
                     <ProfileDropdown user={user} />
                 ) : (

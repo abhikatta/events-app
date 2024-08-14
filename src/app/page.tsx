@@ -1,26 +1,45 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Calendar, DateValue, Input } from "@nextui-org/react";
+import { Calendar, DateValue, Button, useDisclosure } from "@nextui-org/react";
 import { today, getLocalTimeZone } from "@internationalized/date";
+import { Event } from "@prisma/client";
+import EventModal from "../components/EventModal/EventModal";
+import { useSearchParams } from "next/navigation";
 
-interface Priority {
-    name: "Low" | "Medium" | "High";
-    value: "low" | "medium" | "high";
-}
-interface Event {
-    title: string;
-    description?: string;
-    priority: Priority;
-}
 const Page = () => {
     const [date, setDate] = useState<DateValue>(today(getLocalTimeZone()));
-    const [event, setEvent] = useState<Event | null>(null);
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [event, setEvent] = useState<Event[] | null>(null);
+    const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
+    useEffect(() => {
+        setEvent([
+            {
+                id: "1",
+                slug: "something",
+                authorId: "sdasd",
+                createdAt: new Date(),
+                title: "get milk",
+                description: "get milllk",
+                priorityId: "low",
+            },
+            {
+                id: "2",
+                slug: "something2",
+                authorId: "sdasd3",
+                createdAt: new Date(),
+                title: "get milk 1",
+                description: "get milllk2 ",
+                priorityId: "medium",
+            },
+        ]);
+    }, []);
     return (
         <>
-            <div className="flex flex-row gap-10">
+            <div className="flex md:flex-row flex-col h-auto md:gap-0 gap-10 min-w-full md:justify-evenly items-center justify-center">
                 <div className="w-auto">
                     <Calendar
+                        className="md:scale-125"
                         aria-label="Date (Controlled)"
                         defaultValue={date}
                         onChange={setDate}
@@ -28,20 +47,26 @@ const Page = () => {
                 </div>
                 <div className="flex flex-col justify-center items-center w-max h-auto gap-10">
                     <h2 className="text-3xl">{date?.toString()}</h2>
-                    <Input
-                        size="md"
-                        width={300}
-                        variant="underlined"
-                        label="Create an event"
-                        labelPlacement="outside"
-                    />
-                    <Input
-                        size="md"
-                        width={300}
-                        variant="underlined"
-                        label="Create an event"
-                        labelPlacement="outside"
-                    />
+                    {event?.map((item) => {
+                        return (
+                            <Button
+                                key={item.id}
+                                onPress={() => {
+                                    setSelectedEvent(item);
+                                    onOpen();
+                                }}
+                                size="md">
+                                {item.title}
+                            </Button>
+                        );
+                    })}
+                    {selectedEvent && (
+                        <EventModal
+                            isOpen={isOpen}
+                            onOpenChange={onOpenChange}
+                            event={selectedEvent}
+                        />
+                    )}
                 </div>
             </div>
         </>

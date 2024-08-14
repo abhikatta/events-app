@@ -20,7 +20,6 @@ const NavElements = () => {
         <div className="flex flex-col items-center gap-3">
             <ThemeToggle />
             {navElements.map((item, index) => {
-                console.log(item.path);
                 return (
                     <Link href={item.path} key={index}>
                         <Tooltip content={item.name}>

@@ -14,8 +14,7 @@ import {
     useDisclosure,
 } from "@nextui-org/react";
 import { User } from "next-auth";
-import React from "react";
-import { logout } from "../../../actions/server-actions";
+import { logout } from "@/actions/server-actions";
 const ProfileDropdown = ({ user }: { user: User }) => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
