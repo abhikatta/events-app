@@ -33,7 +33,6 @@ export const POST = async (req: Request) => {
     const user = (await auth())?.user;
     const url = new URL(req.url);
     const slug = url.searchParams.get("date")!;
-    console.log("slug:", slug);
 
     const body = await req.json();
     try {

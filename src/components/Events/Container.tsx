@@ -2,14 +2,20 @@ import { API_BASE_URL } from "@/constants";
 import { Event } from "@prisma/client";
 import Events from "./Events";
 
-const EventsContainer = async ({ date }: { date: string }) => {
+const EventsContainer = async ({
+    date,
+    itemId,
+}: {
+    date: string;
+    itemId: string | null;
+}) => {
     try {
         const res = await fetch(`${API_BASE_URL}/events?date=${date}`);
         const events: Event[] = await res.json();
 
         return (
             <div className="flex md:flex-row flex-col h-auto md:gap-0 gap-10 min-w-full md:justify-evenly items-center justify-center">
-                <Events events={events} />
+                <Events thisDate={date} events={events} itemId={itemId} />
             </div>
         );
     } catch (error) {

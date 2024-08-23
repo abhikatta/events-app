@@ -4,21 +4,37 @@ import { Event } from "@prisma/client";
 import { DeleteIcon } from "../themeToggle/icons";
 import EventModal from "../EventModal/EventModal";
 import { useEffect, useMemo, useState } from "react";
-import { getLocalTimeZone, today } from "@internationalized/date";
+import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
 import { useRouter } from "next/navigation";
 import { revalidate } from "@/actions/server-actions";
 
-const Events = ({ events }: { events: Event[] | null }) => {
+const Events = ({
+    events,
+    itemId,
+    thisDate,
+}: {
+    thisDate?: string | null;
+    events: Event[] | null;
+    itemId: string | null;
+}) => {
     const router = useRouter();
     const searchParams = useMemo(() => new URLSearchParams(), []);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [date, setDate] = useState<DateValue | string>(
+        thisDate ? thisDate : today(getLocalTimeZone()).toString()
+    );
 
-    const [date, setDate] = useState<DateValue>(today(getLocalTimeZone()));
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
     useEffect(() => {
-        searchParams.set("date", date.toString());
-        router.push(`?${searchParams.toString()}`);
-    }, [date, router, searchParams]);
+        if (itemId) {
+            const item = events?.find((item) => item.id === itemId) || null;
+            setSelectedEvent(item);
+            onOpen();
+        } else {
+            searchParams.set("date", date.toString());
+            router.push(`?${searchParams.toString()}`);
+        }
+    }, [date, events, itemId, onOpen, router, searchParams]);
 
     const deleteEvent = async (event: Event) => {
         await fetch(`/api/events?date=${date.toString()}`, {
@@ -36,7 +52,9 @@ const Events = ({ events }: { events: Event[] | null }) => {
                 <Calendar
                     className="md:scale-125"
                     aria-label="Date (Controlled)"
-                    defaultValue={date}
+                    defaultValue={
+                        typeof date === "string" ? parseDate(date) : date
+                    }
                     onChange={setDate}
                 />
             </div>
@@ -76,7 +94,7 @@ const Events = ({ events }: { events: Event[] | null }) => {
                     isOpen={isOpen}
                     onOpenChange={onOpenChange}
                     event={selectedEvent}
-                    date={date}
+                    date={typeof date === "string" ? date : date.toString()}
                 />
             </div>
         </>

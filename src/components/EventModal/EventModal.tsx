@@ -1,5 +1,6 @@
 "use client";
 import { revalidate } from "@/actions/server-actions";
+import { getTheme } from "@/provider/themeProvider";
 import {
     Input,
     Modal,
@@ -24,7 +25,7 @@ const EventModal = ({
     event: Event | null;
     isOpen: boolean;
     onOpenChange: () => void;
-    date: DateValue | null;
+    date: string | null;
 }) => {
     const [priority, setPriority] = useState<string | null>(null);
     const createEvent = async (formData: FormData) => {
@@ -51,7 +52,7 @@ const EventModal = ({
                 }),
             });
 
-            revalidate("/events");
+            revalidate("/");
         } catch (error) {
             console.error(error);
         }
@@ -67,7 +68,7 @@ const EventModal = ({
                 {(onClose) => (
                     <>
                         <form action={createEvent}>
-                            <ModalHeader className="flex flex-col gap-1">
+                            <ModalHeader>
                                 <Input
                                     label="Title"
                                     name="title"
@@ -86,13 +87,12 @@ const EventModal = ({
                                 />
                                 <RadioGroup
                                     className="mt-10"
-                                    label="Select priority"
+                                    label="Priority"
                                     defaultValue={event?.priority.toString()}
                                     onValueChange={(e) => setPriority(e)}>
                                     <Radio value="low">Low</Radio>
                                     <Radio value="medium">Medium</Radio>
                                     <Radio value="high">High</Radio>
-                                    <p>Priority: {priority}</p>
                                 </RadioGroup>
                             </ModalBody>
                             <ModalFooter>
