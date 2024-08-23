@@ -20,83 +20,89 @@ export const GET = async (req: Request) => {
         });
     } catch (error) {
         console.error("Error fetching events:", error);
-        return new NextResponse("Internal Server Error", {
-            status: 500,
-        });
+        return new NextResponse(
+            JSON.stringify({ message: "Internal Server Error" }),
+            {
+                status: 500,
+            }
+        );
     }
 };
 
-export const POST = async (
-    req: Request,
-    { params }: { params: { slug: string } }
-) => {
+export const POST = async (req: Request) => {
     const user = (await auth())?.user;
-    if (!user) {
-        return new NextResponse("Pleae login to create an event", {
-            status: 401,
-        });
-    }
+    const url = new URL(req.url);
+    const slug = url.searchParams.get("date")!;
+    console.log("slug:", slug);
+
+    const body = await req.json();
     try {
-        const body = await req.json();
         const createEvent = await prisma.event.create({
             data: {
                 ...body,
-                slug: params.slug,
-                userEmail: user.email,
+                slug: slug,
+                userEmail: user?.email,
             },
         });
         return new NextResponse(JSON.stringify(createEvent), { status: 200 });
     } catch (error) {
         console.log(error);
-        return new NextResponse(`Could not create an event ${error}`, {
-            status: 500,
-        });
+        return new NextResponse(
+            JSON.stringify({ message: `Could not create an event.` }),
+            {
+                status: 500,
+            }
+        );
     }
 };
-export const PATCH = async (
-    req: Request,
-    { params }: { params: { slug: string } }
-) => {
+export const PATCH = async (req: Request) => {
     const user = (await auth())?.user;
-    if (!user) {
-        return new NextResponse("Pleae login to create an event", {
-            status: 401,
-        });
-    }
+    const url = new URL(req.url);
+    const slug = url.searchParams.get("date")!;
+
+    const body = await req.json();
     try {
-        const body = await req.json();
         const updateEvent = await prisma.event.update({
             where: {
                 id: body.id,
-                slug: params.slug,
-                userEmail: user.email!,
+                slug: slug,
+                userEmail: user?.email!,
             },
-            data: body,
+            data: {
+                title: body.title,
+                description: body.description,
+            },
         });
         return new NextResponse(JSON.stringify(updateEvent), { status: 200 });
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        return new NextResponse(
+            JSON.stringify({ message: "Could not edit the event." }),
+            { status: 200 }
+        );
     }
 };
-export const DELETE = async (
-    req: Request,
-    { params }: { params: { slug: string } }
-) => {
+export const DELETE = async (req: Request) => {
     const user = (await auth())?.user;
-    if (!user) {
-        return new NextResponse("Pleae login to create an event", {
-            status: 401,
-        });
-    }
+    const url = new URL(req.url);
+    const slug = url.searchParams.get("date")!;
     try {
         const body = await req.json();
         const deleteEvent = await prisma.event.delete({
             where: {
-                slug: params.slug,
-                userEmail: user.email!,
+                slug: slug,
+                userEmail: user?.email!,
                 id: body.id,
             },
         });
         return new NextResponse(JSON.stringify(deleteEvent), { status: 200 });
-    } catch (error) {}
+    } catch (error) {
+        console.error(error);
+        return new NextResponse(
+            JSON.stringify({ message: `Could not delete event.` }),
+            {
+                status: 500,
+            }
+        );
+    }
 };

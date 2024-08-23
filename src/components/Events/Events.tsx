@@ -18,6 +18,16 @@ const Events = ({ events = null }: { events: any[] | null }) => {
         searchParams.set("date", date.toString());
         router.push(`?${searchParams.toString()}`);
     }, [date, router, searchParams]);
+
+    const deleteEvent = async (event: Event) => {
+        return await fetch(`/api/events?date=${date.toString()}`, {
+            method: "DELETE",
+            body: JSON.stringify({
+                id: event.id,
+            }),
+        });
+    };
+
     return (
         <>
             <div className="w-auto">
@@ -32,7 +42,7 @@ const Events = ({ events = null }: { events: any[] | null }) => {
                 <h2 className="text-3xl">{date?.toString()}</h2>
                 {events?.map((item, index) => {
                     return (
-                        <div key={index} className="flex gap-2 items-center">
+                        <div key={index} className="flex gap-2a ">
                             <Button
                                 variant="ghost"
                                 onPress={() => {
@@ -42,11 +52,11 @@ const Events = ({ events = null }: { events: any[] | null }) => {
                                 size="md">
                                 {item.title}
                             </Button>
-                            {/* <form action={() => deleteEvent(date, item.id)}> */}
-                            <button type="submit">
-                                <DeleteIcon width={30} height={30} />
-                            </button>
-                            {/* </form> */}
+                            <form action={() => deleteEvent(item)}>
+                                <button type="submit" className="h-full">
+                                    <DeleteIcon color="gray" />
+                                </button>
+                            </form>
                         </div>
                     );
                 })}

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/constants";
 import {
     Input,
     Modal,
@@ -24,11 +25,11 @@ const EventModal = ({
     const createEvent = async (formData: FormData) => {
         const title = formData?.get("title");
         const description = formData?.get("description");
-        await fetch(`/api/events/${date}`, {
+        await fetch(`/api/events?date=${date}`, {
             method: event === null ? "POST" : "PATCH",
             body: JSON.stringify({
-                title,
-                description,
+                title: title,
+                description: description,
                 id: event?.id,
                 priority: "medium",
             }),

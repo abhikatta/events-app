@@ -22,14 +22,14 @@ const NavElements = () => {
             {navElements.map((item, index) => {
                 return (
                     <Link href={item.path} key={index}>
-                        <Tooltip content={item.name}>
-                            <Button
-                                className={
-                                    pathname === item.path ? "" : `bg-softBg`
-                                }>
-                                {item.name}
-                            </Button>
-                        </Tooltip>
+                        {/* <Tooltip content={item.name}> */}
+                        <Button
+                            className={
+                                pathname === item.path ? "" : `bg-softBg`
+                            }>
+                            {item.name}
+                        </Button>
+                        {/* </Tooltip> */}
                     </Link>
                 );
             })}
