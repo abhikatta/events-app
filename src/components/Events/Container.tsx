@@ -1,15 +1,10 @@
 import { API_BASE_URL } from "@/constants";
 import { Event } from "@prisma/client";
 import Events from "./Events";
-import { getLocalTimeZone, today } from "@internationalized/date";
 
-const EventsContainer = async () => {
+const EventsContainer = async ({ date }: { date: string }) => {
     try {
-        const date = today(getLocalTimeZone());
-
-        const res = await fetch(
-            `${API_BASE_URL}/events?date=${date.toString()}`
-        );
+        const res = await fetch(`${API_BASE_URL}/events?date=${date}`);
         const events: Event[] = await res.json();
 
         return (

@@ -6,8 +6,9 @@ import EventModal from "../EventModal/EventModal";
 import { useEffect, useMemo, useState } from "react";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { useRouter } from "next/navigation";
+import { revalidate } from "@/actions/server-actions";
 
-const Events = ({ events = null }: { events: any[] | null }) => {
+const Events = ({ events }: { events: Event[] | null }) => {
     const router = useRouter();
     const searchParams = useMemo(() => new URLSearchParams(), []);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -20,12 +21,13 @@ const Events = ({ events = null }: { events: any[] | null }) => {
     }, [date, router, searchParams]);
 
     const deleteEvent = async (event: Event) => {
-        return await fetch(`/api/events?date=${date.toString()}`, {
+        await fetch(`/api/events?date=${date.toString()}`, {
             method: "DELETE",
             body: JSON.stringify({
                 id: event.id,
             }),
         });
+        revalidate("/events");
     };
 
     return (

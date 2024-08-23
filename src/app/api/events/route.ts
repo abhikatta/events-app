@@ -70,6 +70,7 @@ export const PATCH = async (req: Request) => {
             },
             data: {
                 title: body.title,
+                priority: body.priority,
                 description: body.description,
             },
         });
