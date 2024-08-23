@@ -1,30 +1,35 @@
 import { NextResponse } from "next/server";
-import { prisma } from "../../../../../client";
-import { Event } from "@prisma/client";
-import { auth } from "../../../../../auth";
+import { prisma } from "../../../../client";
+import { auth } from "../../../../auth";
 
-export const GET = async (
-    req: Request,
-    { params }: { params: { slug: string } }
-) => {
-    const user = (await auth())?.user;
+export const GET = async (req: Request) => {
     try {
-        if (user) {
-            const events: Event[] = await prisma.event.findMany({
-                where: {
-                    slug: params.slug,
-                    userEmail: user?.email!,
-                },
-            });
-            return new NextResponse(JSON.stringify(events), { status: 200 });
-        } else {
-            return new NextResponse(undefined, { status: 401 });
-        }
+        // Extract date from query parameters
+        const url = new URL(req.url);
+        const slug = url.searchParams.get("date")!;
+
+        // Authenticate user
+        const user = (await auth())?.user;
+
+        const events = await prisma.event.findMany({
+            where: {
+                slug: slug,
+                userEmail: user?.email,
+            },
+        });
+
+        return new NextResponse(JSON.stringify(events), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
     } catch (error) {
-        console.log(error);
-        return new NextResponse(JSON.stringify(error), { status: 500 });
+        console.error("Error fetching events:", error);
+        return new NextResponse("Internal Server Error", {
+            status: 500,
+        });
     }
 };
+
 export const POST = async (
     req: Request,
     { params }: { params: { slug: string } }
@@ -77,7 +82,6 @@ export const PATCH = async (
         console.log(error);
     }
 };
-
 export const DELETE = async (
     req: Request,
     { params }: { params: { slug: string } }

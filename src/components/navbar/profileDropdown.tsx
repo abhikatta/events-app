@@ -40,7 +40,10 @@ const ProfileDropdown = ({ user }: { user: User | null }) => {
                                 <Button
                                     color="danger"
                                     variant="light"
-                                    onClick={async () => logout()}>
+                                    onClick={() => {
+                                        logout();
+                                        onClose();
+                                    }}>
                                     Yes
                                 </Button>
                                 <Button color="primary" onPress={onClose}>

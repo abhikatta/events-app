@@ -19,7 +19,7 @@ const EventModal = ({
     event: Event | null;
     isOpen: boolean;
     onOpenChange: () => void;
-    date: DateValue;
+    date: DateValue | null;
 }) => {
     const createEvent = async (formData: FormData) => {
         const title = formData?.get("title");
