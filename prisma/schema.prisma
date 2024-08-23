@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,27 +17,28 @@ model User {
   sessions      Session[]
   // Optional for WebAuthn support
   Authenticator Authenticator[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  Event      Event[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  Event         Event[]
 }
 
 model Account {
-  id                String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId            String  @db.ObjectId
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String   @db.ObjectId
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.String
-  access_token      String? @db.String
+  refresh_token     String?  @db.String
+  access_token      String?  @db.String
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.String
+  id_token          String?  @db.String
   session_state     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([provider, providerAccountId])
 }
 
@@ -78,22 +78,13 @@ model Authenticator {
   @@unique([userId, credentialID])
 }
 
-
 model Event {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   slug        String   @unique
   title       String
   description String
-  author      User     @relation(fields: [authorId], references: [id])
-  authorId    String   @db.ObjectId
-  createdAt   DateTime
-  priority    Priority @relation(fields: [priorityId], references: [id])
-  priorityId  String   @db.ObjectId
+  user        User?    @relation(fields: [userEmail], references: [email])
+  userEmail   String
+  createdAt   DateTime @default(now())
+  priority    String
 }
-
-model Priority {
-  id    String  @id @default(auto()) @map("_id") @db.ObjectId
-  value String
-  Event Event[]
-}
- 

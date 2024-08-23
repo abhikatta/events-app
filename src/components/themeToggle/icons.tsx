@@ -30,3 +30,37 @@ export const SunIcon = (props: SVGProps<SVGSVGElement>) => (
         </g>
     </svg>
 );
+interface DeleteIconProps {
+    width?: number;
+    height?: number;
+    color?: string;
+}
+
+export const DeleteIcon: React.FC<DeleteIconProps> = ({
+    width = 24,
+    height = 24,
+    color = "black",
+}) => (
+    <svg
+        width={width}
+        height={height}
+        viewBox="0 0 24 24"
+        className=" cursor-pointer"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <path
+            d="M3 6h18M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M10 11v6M14 11v6"
+            stroke={color}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+        <path
+            d="M19 6v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-4 7v6m4-6v6"
+            stroke={color}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </svg>
+);

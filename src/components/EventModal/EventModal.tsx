@@ -6,17 +6,35 @@ import {
     ModalFooter,
     ModalHeader,
     Button,
+    DateValue,
 } from "@nextui-org/react";
 import { Event } from "@prisma/client";
+
 const EventModal = ({
     event,
     isOpen,
     onOpenChange,
+    date,
 }: {
     event: Event | null;
     isOpen: boolean;
     onOpenChange: () => void;
+    date: DateValue;
 }) => {
+    const createEvent = async (formData: FormData) => {
+        const title = formData?.get("title");
+        const description = formData?.get("description");
+        await fetch(`/api/events/${date}`, {
+            method: event === null ? "POST" : "PATCH",
+            body: JSON.stringify({
+                title,
+                description,
+                id: event?.id,
+                priority: "medium",
+            }),
+        });
+    };
+
     return (
         <Modal
             isOpen={isOpen}
@@ -26,10 +44,11 @@ const EventModal = ({
             <ModalContent>
                 {(onClose) => (
                     <>
-                        <form>
+                        <form action={createEvent}>
                             <ModalHeader className="flex flex-col gap-1">
                                 <Input
                                     label="Title"
+                                    name="title"
                                     labelPlacement="outside"
                                     defaultValue={event?.title || ""}
                                     variant="underlined"
@@ -37,25 +56,21 @@ const EventModal = ({
                             </ModalHeader>
                             <ModalBody>
                                 <Input
+                                    name="description"
                                     label="Description"
                                     labelPlacement="outside"
                                     defaultValue={event?.description || ""}
                                     variant="underlined"
                                 />
-                                <Input
-                                    label="Title"
-                                    labelPlacement="outside"
-                                    defaultValue={event?.slug || ""}
-                                    variant="underlined"
-                                />
                             </ModalBody>
                             <ModalFooter>
                                 <Button
-                                    color="danger"
+                                    color="primary"
                                     variant="light"
-                                    onClick={() => console.log("clicked yes")}>
+                                    type="submit">
                                     Save
                                 </Button>
+
                                 <Button className="bg-softBg" onPress={onClose}>
                                     Cancel
                                 </Button>
