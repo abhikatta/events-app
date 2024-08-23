@@ -14,7 +14,7 @@ export const GET = async (req: Request) => {
         const events = await prisma.event.findMany({
             where: {
                 slug: slug,
-                userEmail: user?.email,
+                userEmail: user?.email!,
             },
         });
 
