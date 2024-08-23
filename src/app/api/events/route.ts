@@ -4,13 +4,9 @@ import { auth } from "../../../../auth";
 
 export const GET = async (req: Request) => {
     try {
-        // Extract date from query parameters
         const url = new URL(req.url);
         const slug = url.searchParams.get("date")!;
-
-        // Authenticate user
         const user = (await auth())?.user;
-
         const events = await prisma.event.findMany({
             where: {
                 slug: slug,
