@@ -14,15 +14,24 @@ import {
     Chip,
     ChipProps,
     SortDescriptor,
+    useDisclosure,
 } from "@nextui-org/react";
 import { Event } from "@prisma/client";
 import { columns } from "./columnsData";
 import { VerticalDotsIcon } from "../themeToggle/icons";
 import { Key, useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { deleteEvent } from "@/actions/server-actions";
+import DeleteEventModal from "../Modals/DeleteEventModal";
+import Link from "next/link";
 
 const EventsTable = ({ events }: { events: Event[] }) => {
     console.log("Server side eventstable: ", typeof window === "undefined");
+    const {
+        isOpen: deleteModalIsOpen,
+        onOpen: deleteModalOnOpen,
+        onOpenChange: deleteModalOnOpenChange,
+    } = useDisclosure();
 
     const router = useRouter();
     const searchParams = useMemo(() => new URLSearchParams(), []);
@@ -30,6 +39,8 @@ const EventsTable = ({ events }: { events: Event[] }) => {
         column: "priority",
         direction: "ascending",
     });
+
+    const [deleteEvent, setDeleteEvent] = useState<Event | null>(null);
 
     const sortedItems = useMemo(() => {
         return [...events].sort((a: Event, b: Event) => {
@@ -63,7 +74,6 @@ const EventsTable = ({ events }: { events: Event[] }) => {
     const renderCell = useCallback(
         (columnKey: Key, data: Event) => {
             const cellValue = data[columnKey as keyof Event];
-            console.log("cellvalue: ", cellValue, " columnKey: ", columnKey);
 
             switch (columnKey) {
                 case "title":
@@ -106,13 +116,18 @@ const EventsTable = ({ events }: { events: Event[] }) => {
                                         </Button>
                                     </DropdownTrigger>
                                     <DropdownMenu>
-                                        <DropdownItem>View</DropdownItem>
-
                                         <DropdownItem
                                             onClick={() => goToEvent(data)}>
-                                            Edit
+                                            View/Edit
                                         </DropdownItem>
-                                        <DropdownItem>Delete</DropdownItem>
+                                        <DropdownItem
+                                            onClick={() => {
+                                                setDeleteEvent(data);
+                                                deleteModalOnOpen();
+                                            }}
+                                            color="danger">
+                                            Delete
+                                        </DropdownItem>
                                     </DropdownMenu>
                                 </Dropdown>
                             </div>
@@ -125,33 +140,50 @@ const EventsTable = ({ events }: { events: Event[] }) => {
         [goToEvent, priorityColorMap]
     );
     return (
-        <Table
-            aria-label="Example table with custom cells, pagination and sorting"
-            isHeaderSticky
-            bottomContentPlacement="outside"
-            classNames={{
-                wrapper: "max-h-[382px]",
-            }}
-            sortDescriptor={sortDescriptor}
-            topContentPlacement="outside"
-            onSortChange={setSortDescriptor}>
-            <TableHeader columns={columns}>
-                {(column) => (
-                    <TableColumn
-                        key={column.uid}
-                        allowsSorting={column.sortable}>
-                        {column.name}
-                    </TableColumn>
-                )}
-            </TableHeader>
-            <TableBody items={sortedItems}>
-                {(item) => (
-                    <TableRow key={item.id}>
-                        {(columnKey) => renderCell(columnKey, item)}
-                    </TableRow>
-                )}
-            </TableBody>
-        </Table>
+        <>
+            {deleteEvent ? (
+                <DeleteEventModal
+                    isOpen={deleteModalIsOpen}
+                    onOpenChange={deleteModalOnOpenChange}
+                    event={deleteEvent}
+                />
+            ) : (
+                <></>
+            )}
+            <Table
+                aria-label="Example table with custom cells, pagination and sorting"
+                isHeaderSticky
+                bottomContentPlacement="outside"
+                classNames={{
+                    wrapper: "max-h-[382px]",
+                }}
+                sortDescriptor={sortDescriptor}
+                topContentPlacement="outside"
+                onSortChange={setSortDescriptor}>
+                <TableHeader columns={columns}>
+                    {(column) => (
+                        <TableColumn
+                            key={column.uid}
+                            allowsSorting={column.sortable}>
+                            {column.name}
+                        </TableColumn>
+                    )}
+                </TableHeader>
+                <TableBody
+                    items={sortedItems}
+                    emptyContent={
+                        <Link href={"/"}>
+                            <p>No events found! Create a new event?</p>
+                        </Link>
+                    }>
+                    {(item) => (
+                        <TableRow key={item.id}>
+                            {(columnKey) => renderCell(columnKey, item)}
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
+        </>
     );
 };
 

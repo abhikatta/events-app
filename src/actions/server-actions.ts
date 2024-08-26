@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { signIn, signOut } from "../../auth";
 import { BuiltInProviderType } from "next-auth/providers";
 import { Event } from "@prisma/client";
-import { DateValue } from "@nextui-org/react";
+import { API_BASE_URL } from "@/constants";
 
 export const logout = async () => {
     await signOut();
@@ -17,12 +17,16 @@ export const login = async (singInMethod: BuiltInProviderType) => {
     await signIn(singInMethod);
 };
 
-export const deleteEvent = async (date: DateValue, id: Event["id"]) => {
-    return await fetch(`/api/events/${date}`, {
-        method: "DELETE",
-        body: JSON.stringify({
-            id: id,
-            priority: "medium",
-        }),
-    });
+export const deleteEvent = async (date: string, id: Event["id"]) => {
+    try {
+        await fetch(`${API_BASE_URL}/events?date=${date.toString()}`, {
+            method: "DELETE",
+            body: JSON.stringify({
+                id: id,
+            }),
+        });
+        revalidate("/events");
+    } catch (error) {
+        console.error(error);
+    }
 };
