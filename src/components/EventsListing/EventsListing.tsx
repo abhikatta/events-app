@@ -1,10 +1,10 @@
 "use client";
-import { Button, Calendar, DateValue, useDisclosure } from "@nextui-org/react";
+import { Button, Calendar, useDisclosure } from "@nextui-org/react";
 import { Event } from "@prisma/client";
 import { DeleteIcon } from "../themeToggle/icons";
 import EventModal from "../EventModal/EventModal";
 import { useEffect, useMemo, useState } from "react";
-import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
+import { parseDate } from "@internationalized/date";
 import { useRouter } from "next/navigation";
 import { revalidate } from "@/actions/server-actions";
 
@@ -13,7 +13,7 @@ const Events = ({
     itemId,
     thisDate,
 }: {
-    thisDate?: string | null;
+    thisDate: string;
     events: Event[] | null;
     itemId: string | null;
 }) => {
@@ -22,9 +22,7 @@ const Events = ({
     const router = useRouter();
     const searchParams = useMemo(() => new URLSearchParams(), []);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const [date, setDate] = useState<DateValue | string>(
-        thisDate ? thisDate : today(getLocalTimeZone()).toString()
-    );
+    const [date, setDate] = useState<string>(thisDate);
 
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
     useEffect(() => {
@@ -57,7 +55,7 @@ const Events = ({
                     defaultValue={
                         typeof date === "string" ? parseDate(date) : date
                     }
-                    onChange={setDate}
+                    onChange={(e) => setDate(e.toString())}
                 />
             </div>
             <div className="flex flex-col justify-center items-center w-max h-auto gap-10">
@@ -82,21 +80,19 @@ const Events = ({
                         </div>
                     );
                 })}
-                {
-                    <Button
-                        onClick={() => {
-                            onOpen();
-                            setSelectedEvent(null);
-                        }}>
-                        Create a new event
-                    </Button>
-                }
 
+                <Button
+                    onClick={() => {
+                        onOpen();
+                        setSelectedEvent(null);
+                    }}>
+                    Create a new event
+                </Button>
                 <EventModal
                     isOpen={isOpen}
                     onOpenChange={onOpenChange}
                     event={selectedEvent}
-                    date={typeof date === "string" ? date : date.toString()}
+                    date={date.toString()}
                 />
             </div>
         </>

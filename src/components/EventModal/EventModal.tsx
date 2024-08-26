@@ -1,3 +1,4 @@
+// this is a client component
 import { revalidate } from "@/actions/server-actions";
 import {
     Input,
@@ -59,7 +60,7 @@ const EventModal = ({
                                     label="Title"
                                     name="title"
                                     labelPlacement="outside"
-                                    defaultValue={event?.title || ""}
+                                    defaultValue={event?.title}
                                     variant="underlined"
                                 />
                             </ModalHeader>
@@ -68,7 +69,7 @@ const EventModal = ({
                                     name="description"
                                     label="Description"
                                     labelPlacement="outside"
-                                    defaultValue={event?.description || ""}
+                                    defaultValue={event?.description}
                                     variant="underlined"
                                 />
                                 <RadioGroup
