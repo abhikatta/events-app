@@ -1,39 +1,24 @@
-"use client";
-import { useEffect, useState } from "react";
-import { Calendar, DateValue, Input } from "@nextui-org/react";
-import { today, getLocalTimeZone } from "@internationalized/date";
+import EventsContainer from "@/components/EventsListing/EventsListingContainer";
+import { auth } from "../../auth";
+import { getLocalTimeZone, today } from "@internationalized/date";
 
-const Page = () => {
-    const [date, setDate] = useState<DateValue>();
-    const [eventTitle, setEventTitle] = useState("");
-    useEffect(() => {
-        setDate(today(getLocalTimeZone()));
-    }, []);
+const Page = async ({ searchParams }: { searchParams: URLSearchParams }) => {
+    console.log("Server side /page: ", typeof window === "undefined");
+    const urlSearchParams = new URLSearchParams(searchParams);
+    const date =
+        urlSearchParams.get("date") || today(getLocalTimeZone()).toString();
+
+    const eventId = urlSearchParams.get("event") || null;
+
+    const user = (await auth())?.user;
     return (
-        <>
-            <div className="flex flex-row gap-10">
-                <div className="w-auto">
-                    <Calendar
-                        aria-label="Date (Controlled)"
-                        defaultValue={date}
-                        onChange={setDate}
-                    />
-                </div>
-                <div className="flex flex-col justify-center items-center w-max h-auto gap-10">
-                    <h2 className="text-3xl">{date?.toString()}</h2>
-                    <Input
-                        size="md"
-                        width={300}
-                        variant="underlined"
-                        onChange={(e) => setEventTitle(e.target.value)}
-                        label="Create an event"
-                        labelPlacement="outside"
-                    />
-                    <p>{eventTitle}</p>
-                </div>
-            </div>
-        </>
+        <div className="flex flex-col md:flex-row gap-10 md:gap-0 h-auto items-center justify-center min-w-full">
+            {user ? (
+                <EventsContainer eventId={eventId} date={date} />
+            ) : (
+                <p>Please login or create an account to continue!</p>
+            )}
+        </div>
     );
 };
-
 export default Page;
