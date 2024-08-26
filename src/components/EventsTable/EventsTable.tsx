@@ -15,9 +15,10 @@ import {
     ChipProps,
     SortDescriptor,
     useDisclosure,
+    Input,
 } from "@nextui-org/react";
 import { Event } from "@prisma/client";
-import { VerticalDotsIcon } from "../themeToggle/icons";
+import { SearchIcon, VerticalDotsIcon } from "../themeToggle/icons";
 import { Key, useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import DeleteEventModal from "../Modals/DeleteEventModal";
@@ -30,25 +31,36 @@ const EventsTable = ({ events }: { events: Event[] }) => {
         onOpen: deleteModalOnOpen,
         onOpenChange: deleteModalOnOpenChange,
     } = useDisclosure();
-
     const router = useRouter();
     const searchParams = useMemo(() => new URLSearchParams(), []);
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
         column: "priority",
         direction: "ascending",
     });
-
+    const [filterValue, setFilterValue] = useState("");
     const [deleteEvent, setDeleteEvent] = useState<Event | null>(null);
 
+    const filteredItems = useMemo(() => {
+        let filteredEvents = [...events];
+        if (Boolean(filterValue)) {
+            filteredEvents = filteredEvents.filter((event) => {
+                return event.title
+                    .toLowerCase()
+                    .includes(filterValue.toLowerCase());
+            });
+        }
+        return filteredEvents;
+    }, [filterValue]);
+
     const sortedItems = useMemo(() => {
-        return [...events].sort((a: Event, b: Event) => {
+        return [...filteredItems].sort((a: Event, b: Event) => {
             const first = a[sortDescriptor.column as keyof Event] as string;
             const second = b[sortDescriptor.column as keyof Event] as string;
             const cmp = first < second ? -1 : first > second ? 1 : 0;
 
             return sortDescriptor.direction === "descending" ? cmp : -cmp;
         });
-    }, [sortDescriptor, events]);
+    }, [sortDescriptor, events, filterValue, filteredItems]);
 
     const priorityColorMap: Record<string, ChipProps["color"]> = useMemo(
         () => ({
@@ -69,6 +81,18 @@ const EventsTable = ({ events }: { events: Event[] }) => {
         [router, searchParams]
     );
 
+    const topContent = useMemo(() => {
+        return (
+            <Input
+                isClearable
+                className="w-full "
+                placeholder="Search by name..."
+                startContent={<SearchIcon />}
+                onClear={() => setFilterValue("")}
+                onValueChange={(e) => setFilterValue(e)}
+            />
+        );
+    }, []);
     const renderCell = useCallback(
         (columnKey: Key, data: Event) => {
             const cellValue = data[columnKey as keyof Event];
@@ -80,8 +104,10 @@ const EventsTable = ({ events }: { events: Event[] }) => {
                 case "description":
                     return (
                         <TableCell>
-                            {data.description.slice(0, 15)}
-                            {data.description.length > 15 ? "..." : ""}
+                            <p>
+                                {data.description.slice(0, 15)}
+                                {data.description.length > 15 ? "..." : ""}
+                            </p>
                         </TableCell>
                     );
                 case "priority":
@@ -155,6 +181,7 @@ const EventsTable = ({ events }: { events: Event[] }) => {
                 }}
                 sortDescriptor={sortDescriptor}
                 topContentPlacement="outside"
+                topContent={topContent}
                 onSortChange={setSortDescriptor}>
                 <TableHeader columns={columns}>
                     {(column) => (

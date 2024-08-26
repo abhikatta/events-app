@@ -16,7 +16,6 @@ const Page = async () => {
         const events: Event[] = await res.json();
         return (
             <div>
-                search
                 <EventsTable events={events} />
             </div>
         );
