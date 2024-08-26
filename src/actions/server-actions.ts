@@ -13,7 +13,6 @@ export const logout = async () => {
 export const revalidate = (path: string) => revalidatePath(path);
 
 export const login = async (singInMethod: BuiltInProviderType) => {
-    "use server";
     await signIn(singInMethod);
 };
 

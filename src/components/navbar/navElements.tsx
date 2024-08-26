@@ -1,7 +1,7 @@
 "use client";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Tooltip, Button } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import ThemeToggle from "../themeToggle/themToggle";
 
 const NavElements = () => {
@@ -24,14 +24,12 @@ const NavElements = () => {
             {navElements.map((item, index) => {
                 return (
                     <Link href={item.path} key={index}>
-                        {/* <Tooltip content={item.name}> */}
                         <Button
                             className={
                                 pathname === item.path ? "" : `bg-softBg`
                             }>
                             {item.name}
                         </Button>
-                        {/* </Tooltip> */}
                     </Link>
                 );
             })}

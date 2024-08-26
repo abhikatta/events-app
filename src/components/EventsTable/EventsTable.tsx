@@ -17,13 +17,12 @@ import {
     useDisclosure,
 } from "@nextui-org/react";
 import { Event } from "@prisma/client";
-import { columns } from "./columnsData";
 import { VerticalDotsIcon } from "../themeToggle/icons";
 import { Key, useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { deleteEvent } from "@/actions/server-actions";
 import DeleteEventModal from "../Modals/DeleteEventModal";
 import Link from "next/link";
+import { columns } from "@/constants";
 
 const EventsTable = ({ events }: { events: Event[] }) => {
     console.log("Server side eventstable: ", typeof window === "undefined");
@@ -76,10 +75,9 @@ const EventsTable = ({ events }: { events: Event[] }) => {
             const cellValue = data[columnKey as keyof Event];
 
             switch (columnKey) {
-                case "title":
+                case "titlasde":
                     return <TableCell>{data.title}</TableCell>;
-                case "id":
-                    return <TableCell>{data.id}</TableCell>;
+
                 case "description":
                     return (
                         <TableCell>
@@ -153,7 +151,6 @@ const EventsTable = ({ events }: { events: Event[] }) => {
             <Table
                 aria-label="Example table with custom cells, pagination and sorting"
                 isHeaderSticky
-                bottomContentPlacement="outside"
                 classNames={{
                     wrapper: "max-h-[382px]",
                 }}
@@ -178,7 +175,11 @@ const EventsTable = ({ events }: { events: Event[] }) => {
                     }>
                     {(item) => (
                         <TableRow key={item.id}>
-                            {(columnKey) => renderCell(columnKey, item)}
+                            {(columnKey) => {
+                                console.log("columngka", columnKey);
+
+                                return renderCell(columnKey, item);
+                            }}
                         </TableRow>
                     )}
                 </TableBody>

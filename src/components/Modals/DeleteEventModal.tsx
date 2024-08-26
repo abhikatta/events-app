@@ -2,13 +2,11 @@
 import { deleteEvent } from "@/actions/server-actions";
 import {
     Button,
-    Divider,
     Modal,
     ModalBody,
     ModalContent,
     ModalFooter,
     ModalHeader,
-    useDisclosure,
 } from "@nextui-org/react";
 import { Event } from "@prisma/client";
 import React from "react";
