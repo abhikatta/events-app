@@ -9,8 +9,6 @@ const EventsContainer = async ({
     date: string;
     eventId: string | null;
 }) => {
-    console.log("Server side container: ", typeof window === "undefined");
-
     try {
         const res = await fetch(`${API_BASE_URL}/events?date=${date}`);
         const events: Event[] = await res.json();

@@ -25,7 +25,6 @@ import Link from "next/link";
 import { columns } from "@/constants";
 
 const EventsTable = ({ events }: { events: Event[] }) => {
-    console.log("Server side eventstable: ", typeof window === "undefined");
     const {
         isOpen: deleteModalIsOpen,
         onOpen: deleteModalOnOpen,
@@ -175,11 +174,7 @@ const EventsTable = ({ events }: { events: Event[] }) => {
                     }>
                     {(item) => (
                         <TableRow key={item.id}>
-                            {(columnKey) => {
-                                console.log("columngka", columnKey);
-
-                                return renderCell(columnKey, item);
-                            }}
+                            {(columnKey) => renderCell(columnKey, item)}
                         </TableRow>
                     )}
                 </TableBody>

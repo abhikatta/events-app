@@ -36,7 +36,7 @@ const EventModal = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     const router = useRouter();
-    console.log("Server side modal: ", typeof window === "undefined");
+
     const createEvent = async (formData: FormData) => {
         const title = formData?.get("title");
         const description = formData?.get("description");

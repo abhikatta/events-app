@@ -5,8 +5,6 @@ import { Button } from "@nextui-org/react";
 import ThemeToggle from "../themeToggle/themToggle";
 
 const NavElements = () => {
-    console.log("Server side navelements: ", typeof window === "undefined");
-
     const pathname = usePathname();
     const navElements: { path: string; name: string }[] = [
         {
