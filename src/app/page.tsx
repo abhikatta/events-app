@@ -8,13 +8,13 @@ const Page = async ({ searchParams }: { searchParams: URLSearchParams }) => {
     const date =
         urlSearchParams.get("date") || today(getLocalTimeZone()).toString();
 
-    const item = urlSearchParams.get("item") || null;
+    const eventId = urlSearchParams.get("event") || null;
 
     const user = (await auth())?.user;
     return (
         <div className="flex flex-col md:flex-row gap-10 md:gap-0 h-auto items-center justify-center min-w-full">
             {user ? (
-                <EventsContainer itemId={item} date={date} />
+                <EventsContainer eventId={eventId} date={date} />
             ) : (
                 <p>Please login or create an account to continue!</p>
             )}

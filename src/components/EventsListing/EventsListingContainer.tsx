@@ -4,10 +4,10 @@ import Events from "./EventsListing";
 
 const EventsContainer = async ({
     date,
-    itemId,
+    eventId,
 }: {
     date: string;
-    itemId: string | null;
+    eventId: string | null;
 }) => {
     console.log("Server side container: ", typeof window === "undefined");
 
@@ -17,7 +17,7 @@ const EventsContainer = async ({
 
         return (
             <div className="flex md:flex-row flex-col h-auto md:gap-0 gap-10 min-w-full md:justify-evenly items-center justify-center">
-                <Events thisDate={date} events={events} itemId={itemId} />
+                <Events thisDate={date} events={events} eventId={eventId} />
             </div>
         );
     } catch (error) {

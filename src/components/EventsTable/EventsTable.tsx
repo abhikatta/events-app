@@ -50,6 +50,16 @@ const EventsTable = ({ events }: { events: Event[] }) => {
         []
     );
 
+    const goToEvent = useCallback(
+        (data: Event) => {
+            searchParams.set("date", data.slug);
+            searchParams.set("event", data.id);
+
+            router.push(`/?${searchParams.toString()}`);
+        },
+        [router, searchParams]
+    );
+
     const renderCell = useCallback(
         (columnKey: Key, data: Event) => {
             const cellValue = data[columnKey as keyof Event];
@@ -97,21 +107,9 @@ const EventsTable = ({ events }: { events: Event[] }) => {
                                     </DropdownTrigger>
                                     <DropdownMenu>
                                         <DropdownItem>View</DropdownItem>
-                                        <DropdownItem
-                                            onClick={() => {
-                                                searchParams.set(
-                                                    "date",
-                                                    data.slug
-                                                );
-                                                searchParams.set(
-                                                    "item",
-                                                    data.id
-                                                );
 
-                                                router.push(
-                                                    `/?${searchParams.toString()}`
-                                                );
-                                            }}>
+                                        <DropdownItem
+                                            onClick={() => goToEvent(data)}>
                                             Edit
                                         </DropdownItem>
                                         <DropdownItem>Delete</DropdownItem>
@@ -124,7 +122,7 @@ const EventsTable = ({ events }: { events: Event[] }) => {
                     return <TableCell>{cellValue.toString()}</TableCell>;
             }
         },
-        [priorityColorMap, router, searchParams]
+        [goToEvent, priorityColorMap]
     );
     return (
         <Table

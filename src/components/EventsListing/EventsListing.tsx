@@ -10,12 +10,12 @@ import { revalidate } from "@/actions/server-actions";
 
 const Events = ({
     events,
-    itemId,
+    eventId,
     thisDate,
 }: {
     thisDate: string;
     events: Event[] | null;
-    itemId: string | null;
+    eventId: string | null;
 }) => {
     console.log("Server side events: ", typeof window === "undefined");
 
@@ -26,15 +26,15 @@ const Events = ({
 
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
     useEffect(() => {
-        if (itemId) {
-            const item = events?.find((item) => item.id === itemId) || null;
-            setSelectedEvent(item);
+        if (eventId) {
+            const event = events?.find((item) => item.id === eventId) || null;
+            setSelectedEvent(event);
             onOpen();
         } else {
             searchParams.set("date", date.toString());
             router.push(`?${searchParams.toString()}`);
         }
-    }, [date, events, itemId, onOpen, router, searchParams]);
+    }, [date, events, eventId, onOpen, router, searchParams]);
 
     const deleteEvent = async (event: Event) => {
         await fetch(`/api/events?date=${date.toString()}`, {
