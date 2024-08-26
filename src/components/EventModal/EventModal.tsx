@@ -1,5 +1,6 @@
-// this is a client component
+"use client";
 import { revalidate } from "@/actions/server-actions";
+import { routeToHome } from "@/utils";
 import {
     Input,
     Modal,
@@ -12,18 +13,29 @@ import {
     Radio,
 } from "@nextui-org/react";
 import { Event } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const EventModal = ({
     event,
     isOpen,
     onOpenChange,
     date,
+    eventId,
 }: {
     event: Event | null;
     isOpen: boolean;
     onOpenChange: () => void;
     date: string | null;
+    eventId: string | null;
 }) => {
+    useEffect(() => {
+        if (eventId) {
+            onOpenChange();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+    const router = useRouter();
     console.log("Server side modal: ", typeof window === "undefined");
     const createEvent = async (formData: FormData) => {
         const title = formData?.get("title");
@@ -49,7 +61,10 @@ const EventModal = ({
         <Modal
             isOpen={isOpen}
             onOpenChange={onOpenChange}
-            isDismissable={false}
+            isDismissable={true}
+            onClose={() => {
+                routeToHome(date, router);
+            }}
             isKeyboardDismissDisabled={true}>
             <ModalContent>
                 {(onClose) => (
@@ -88,11 +103,7 @@ const EventModal = ({
                                     variant="light"
                                     onPress={onClose}
                                     type="submit">
-                                    Save
-                                </Button>
-
-                                <Button className="bg-softBg" onPress={onClose}>
-                                    Cancel
+                                    {eventId ? "Save" : "Create event"}
                                 </Button>
                             </ModalFooter>
                         </form>

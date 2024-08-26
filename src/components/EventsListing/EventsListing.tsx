@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { parseDate } from "@internationalized/date";
 import { useRouter } from "next/navigation";
 import { revalidate } from "@/actions/server-actions";
+import { routeToHome } from "@/utils";
 
 const Events = ({
     events,
@@ -29,7 +30,6 @@ const Events = ({
         if (eventId) {
             const event = events?.find((item) => item.id === eventId) || null;
             setSelectedEvent(event);
-            onOpen();
         } else {
             searchParams.set("date", date.toString());
             router.push(`?${searchParams.toString()}`);
@@ -68,6 +68,9 @@ const Events = ({
                                 onPress={() => {
                                     setSelectedEvent(item);
                                     onOpen();
+                                    if (eventId) {
+                                        routeToHome(date, router);
+                                    }
                                 }}
                                 size="md">
                                 {item.title}
@@ -85,10 +88,12 @@ const Events = ({
                     onClick={() => {
                         onOpen();
                         setSelectedEvent(null);
+                        routeToHome(date, router);
                     }}>
                     Create a new event
                 </Button>
                 <EventModal
+                    eventId={eventId}
                     isOpen={isOpen}
                     onOpenChange={onOpenChange}
                     event={selectedEvent}
