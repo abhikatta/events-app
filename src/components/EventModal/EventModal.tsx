@@ -1,6 +1,4 @@
-"use client";
 import { revalidate } from "@/actions/server-actions";
-import { getTheme } from "@/provider/themeProvider";
 import {
     Input,
     Modal,
@@ -9,12 +7,10 @@ import {
     ModalFooter,
     ModalHeader,
     Button,
-    DateValue,
     RadioGroup,
     Radio,
 } from "@nextui-org/react";
 import { Event } from "@prisma/client";
-import { useState } from "react";
 
 const EventModal = ({
     event,
@@ -27,20 +23,11 @@ const EventModal = ({
     onOpenChange: () => void;
     date: string | null;
 }) => {
-    const [priority, setPriority] = useState<string | null>(null);
+    console.log("Server side modal: ", typeof window === "undefined");
     const createEvent = async (formData: FormData) => {
         const title = formData?.get("title");
         const description = formData?.get("description");
-        if (
-            !title ||
-            !description ||
-            !priority ||
-            title.toString().trim() === "" ||
-            description.toString().trim() === "" ||
-            priority === null
-        ) {
-            return null;
-        }
+        const priority = formData?.get("priority");
         try {
             await fetch(`/api/events?date=${date}`, {
                 method: event === null ? "POST" : "PATCH",
@@ -51,8 +38,7 @@ const EventModal = ({
                     priority: priority,
                 }),
             });
-
-            revalidate("/");
+            return revalidate("/");
         } catch (error) {
             console.error(error);
         }
@@ -87,9 +73,9 @@ const EventModal = ({
                                 />
                                 <RadioGroup
                                     className="mt-10"
+                                    name="priority"
                                     label="Priority"
-                                    defaultValue={event?.priority.toString()}
-                                    onValueChange={(e) => setPriority(e)}>
+                                    defaultValue={event?.priority.toString()}>
                                     <Radio value="low">Low</Radio>
                                     <Radio value="medium">Medium</Radio>
                                     <Radio value="high">High</Radio>

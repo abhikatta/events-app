@@ -1,8 +1,9 @@
-import EventsContainer from "@/components/Events/Container";
+import EventsContainer from "@/components/EventsListing/EventsListingContainer";
 import { auth } from "../../auth";
 import { getLocalTimeZone, today } from "@internationalized/date";
 
 const Page = async ({ searchParams }: { searchParams: URLSearchParams }) => {
+    console.log("Server side /page: ", typeof window === "undefined");
     const urlSearchParams = new URLSearchParams(searchParams);
     const date =
         urlSearchParams.get("date") || today(getLocalTimeZone()).toString();

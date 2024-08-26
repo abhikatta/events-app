@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "@/constants";
 import { Event } from "@prisma/client";
-import Events from "./Events";
+import Events from "./EventsListing";
 
 const EventsContainer = async ({
     date,
@@ -9,6 +9,8 @@ const EventsContainer = async ({
     date: string;
     itemId: string | null;
 }) => {
+    console.log("Server side container: ", typeof window === "undefined");
+
     try {
         const res = await fetch(`${API_BASE_URL}/events?date=${date}`);
         const events: Event[] = await res.json();

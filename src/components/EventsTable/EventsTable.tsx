@@ -16,14 +16,16 @@ import {
     SortDescriptor,
 } from "@nextui-org/react";
 import { Event } from "@prisma/client";
-import { columns } from "./data";
+import { columns } from "./columnsData";
 import { VerticalDotsIcon } from "../themeToggle/icons";
-import { useMemo, useState } from "react";
+import { Key, useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const EventsTable = ({ events }: { events: Event[] }) => {
+    console.log("Server side eventstable: ", typeof window === "undefined");
+
     const router = useRouter();
-    const searchParams = new URLSearchParams();
+    const searchParams = useMemo(() => new URLSearchParams(), []);
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
         column: "priority",
         direction: "ascending",
@@ -39,51 +41,49 @@ const EventsTable = ({ events }: { events: Event[] }) => {
         });
     }, [sortDescriptor, events]);
 
-    const priorityColorMap: Record<string, ChipProps["color"]> = {
-        low: "success",
-        medium: "warning",
-        high: "danger",
-    };
+    const priorityColorMap: Record<string, ChipProps["color"]> = useMemo(
+        () => ({
+            low: "success",
+            medium: "warning",
+            high: "danger",
+        }),
+        []
+    );
 
-    return (
-        <Table
-            aria-label="Example table with custom cells, pagination and sorting"
-            isHeaderSticky
-            bottomContentPlacement="outside"
-            classNames={{
-                wrapper: "max-h-[382px]",
-            }}
-            sortDescriptor={sortDescriptor}
-            topContentPlacement="outside"
-            onSortChange={setSortDescriptor}>
-            <TableHeader columns={columns}>
-                {(column) => (
-                    <TableColumn
-                        key={column.uid}
-                        align={column.uid === "actions" ? "center" : "start"}
-                        allowsSorting={column.sortable}>
-                        {column.name}
-                    </TableColumn>
-                )}
-            </TableHeader>
-            <TableBody items={sortedItems}>
-                {(item) => (
-                    <TableRow key={item.id}>
-                        <TableCell>{item.id}</TableCell>
-                        <TableCell>{item.title}</TableCell>
-                        <TableCell>{item.description}</TableCell>
+    const renderCell = useCallback(
+        (columnKey: Key, data: Event) => {
+            const cellValue = data[columnKey as keyof Event];
+            console.log("cellvalue: ", cellValue, " columnKey: ", columnKey);
+
+            switch (columnKey) {
+                case "title":
+                    return <TableCell>{data.title}</TableCell>;
+                case "id":
+                    return <TableCell>{data.id}</TableCell>;
+                case "description":
+                    return (
+                        <TableCell>
+                            {data.description.slice(0, 15)}
+                            {data.description.length > 15 ? "..." : ""}
+                        </TableCell>
+                    );
+                case "priority":
+                    return (
                         <TableCell>
                             <Chip
-                                color={priorityColorMap[item.priority]}
+                                color={priorityColorMap[data.priority]}
                                 size="md"
                                 className="text-center w-[100%]"
                                 variant="flat">
-                                {item.priority.slice(0, 1).toUpperCase() +
-                                    item.priority.slice(1)}
+                                {data.priority.slice(0, 1).toUpperCase() +
+                                    data.priority.slice(1)}
                             </Chip>
                         </TableCell>
-                        <TableCell>{item.createdAt.toString()}</TableCell>
-                        <TableCell>{item.slug}</TableCell>
+                    );
+                case "slug":
+                    return <TableCell>{data.slug}</TableCell>;
+                case "actions":
+                    return (
                         <TableCell>
                             <div className="relative flex justify-end items-center gap-2">
                                 <Dropdown>
@@ -101,11 +101,11 @@ const EventsTable = ({ events }: { events: Event[] }) => {
                                             onClick={() => {
                                                 searchParams.set(
                                                     "date",
-                                                    item.slug
+                                                    data.slug
                                                 );
                                                 searchParams.set(
                                                     "item",
-                                                    item.id
+                                                    data.id
                                                 );
 
                                                 router.push(
@@ -119,6 +119,37 @@ const EventsTable = ({ events }: { events: Event[] }) => {
                                 </Dropdown>
                             </div>
                         </TableCell>
+                    );
+                default:
+                    return <TableCell>{cellValue.toString()}</TableCell>;
+            }
+        },
+        [priorityColorMap, router, searchParams]
+    );
+    return (
+        <Table
+            aria-label="Example table with custom cells, pagination and sorting"
+            isHeaderSticky
+            bottomContentPlacement="outside"
+            classNames={{
+                wrapper: "max-h-[382px]",
+            }}
+            sortDescriptor={sortDescriptor}
+            topContentPlacement="outside"
+            onSortChange={setSortDescriptor}>
+            <TableHeader columns={columns}>
+                {(column) => (
+                    <TableColumn
+                        key={column.uid}
+                        allowsSorting={column.sortable}>
+                        {column.name}
+                    </TableColumn>
+                )}
+            </TableHeader>
+            <TableBody items={sortedItems}>
+                {(item) => (
+                    <TableRow key={item.id}>
+                        {(columnKey) => renderCell(columnKey, item)}
                     </TableRow>
                 )}
             </TableBody>

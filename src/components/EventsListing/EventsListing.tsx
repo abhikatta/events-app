@@ -17,6 +17,8 @@ const Events = ({
     events: Event[] | null;
     itemId: string | null;
 }) => {
+    console.log("Server side events: ", typeof window === "undefined");
+
     const router = useRouter();
     const searchParams = useMemo(() => new URLSearchParams(), []);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
