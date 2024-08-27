@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
-import { auth } from "../../../../../auth";
 import { prisma } from "../../../../../client";
+import { User } from "@prisma/client";
 
 export const GET = async (req: Request) => {
     try {
-        const user = (await auth())?.user;
+        const url = new URL(req.url);
+        const userEmail: User["email"] = url.searchParams.get("userEmail")!;
         const events = await prisma.event.findMany({
             where: {
-                userEmail: user?.email!,
+                userEmail,
             },
         });
 

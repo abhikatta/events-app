@@ -1,6 +1,7 @@
 import EventsContainer from "@/components/EventsListing/EventsListingContainer";
 import { auth } from "../../auth";
 import { getLocalTimeZone, today } from "@internationalized/date";
+import { Session } from "next-auth";
 
 const Page = async ({ searchParams }: { searchParams: URLSearchParams }) => {
     const urlSearchParams = new URLSearchParams(searchParams);
@@ -9,11 +10,15 @@ const Page = async ({ searchParams }: { searchParams: URLSearchParams }) => {
 
     const eventId = urlSearchParams.get("event") || null;
 
-    const user = (await auth())?.user;
+    const userSession: Session | null = (await auth()) || null;
     return (
         <div className="flex flex-col md:flex-row gap-10 md:gap-0 h-auto items-center justify-center min-w-full">
-            {user ? (
-                <EventsContainer eventId={eventId} date={date} />
+            {userSession ? (
+                <EventsContainer
+                    userSession={userSession}
+                    eventId={eventId}
+                    date={date}
+                />
             ) : (
                 <p>Please login or create an account to continue!</p>
             )}

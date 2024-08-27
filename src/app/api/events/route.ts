@@ -1,23 +1,30 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../client";
 import { auth } from "../../../../auth";
+import { User } from "@prisma/client";
 
 export const GET = async (req: Request) => {
     try {
         const url = new URL(req.url);
         const slug = url.searchParams.get("date")!;
-        const user = (await auth())?.user;
-        const events = await prisma.event.findMany({
-            where: {
-                slug: slug,
-                userEmail: user?.email!,
-            },
-        });
+        const userEmail: User["email"] = url.searchParams.get("userEmail")!;
 
-        return new NextResponse(JSON.stringify(events), {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-        });
+        if (userEmail) {
+            const events = await prisma.event.findMany({
+                where: {
+                    slug: slug,
+                    userEmail,
+                },
+            });
+            return new NextResponse(JSON.stringify(events), {
+                status: 200,
+            });
+        } else {
+            return new NextResponse(
+                JSON.stringify({ message: "Please login to continue..." }),
+                { status: 401 }
+            );
+        }
     } catch (error) {
         console.error("Error fetching events:", error);
         return new NextResponse(
@@ -30,17 +37,15 @@ export const GET = async (req: Request) => {
 };
 
 export const POST = async (req: Request) => {
-    const user = (await auth())?.user;
     const url = new URL(req.url);
     const slug = url.searchParams.get("date")!;
-
     const body = await req.json();
     try {
         const createEvent = await prisma.event.create({
             data: {
                 ...body,
-                slug: slug,
-                userEmail: user?.email,
+                slug,
+                userEmail: body?.userEmail,
             },
         });
         return new NextResponse(JSON.stringify(createEvent), { status: 200 });
