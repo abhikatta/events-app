@@ -50,7 +50,7 @@ const EventsTable = ({ events }: { events: Event[] }) => {
             });
         }
         return filteredEvents;
-    }, [filterValue]);
+    }, [filterValue, events]);
 
     const sortedItems = useMemo(() => {
         return [...filteredItems].sort((a: Event, b: Event) => {
@@ -60,7 +60,7 @@ const EventsTable = ({ events }: { events: Event[] }) => {
 
             return sortDescriptor.direction === "descending" ? cmp : -cmp;
         });
-    }, [sortDescriptor, events, filterValue, filteredItems]);
+    }, [sortDescriptor, filteredItems]);
 
     const priorityColorMap: Record<string, ChipProps["color"]> = useMemo(
         () => ({
@@ -160,6 +160,7 @@ const EventsTable = ({ events }: { events: Event[] }) => {
                     return <TableCell>{cellValue.toString()}</TableCell>;
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [goToEvent, priorityColorMap]
     );
     return (

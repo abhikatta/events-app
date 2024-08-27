@@ -16,16 +16,18 @@ export const login = async (singInMethod: BuiltInProviderType) => {
     await signIn(singInMethod);
 };
 
-export const deleteEvent = async (date: string, id: Event["id"]) => {
+export const deleteEvent = async (event: Event) => {
     try {
-        await fetch(`${API_BASE_URL}/events?date=${date.toString()}`, {
+        await fetch(`${API_BASE_URL}/events?date=${event.slug}`, {
             method: "DELETE",
             body: JSON.stringify({
-                id: id,
+                id: event.id,
             }),
         });
         revalidate("/events");
+        return true;
     } catch (error) {
         console.error(error);
+        return false;
     }
 };

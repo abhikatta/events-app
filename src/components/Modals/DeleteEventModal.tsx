@@ -10,6 +10,7 @@ import {
 } from "@nextui-org/react";
 import { Event } from "@prisma/client";
 import React from "react";
+import { toast } from "sonner";
 
 const DeleteEventModal = ({
     event,
@@ -49,9 +50,18 @@ const DeleteEventModal = ({
                         </ModalBody>
                         <ModalFooter>
                             <form
-                                action={() =>
-                                    deleteEvent(event.slug, event.id)
-                                }>
+                                action={async () => {
+                                    const success = await deleteEvent(event);
+                                    if (success) {
+                                        toast.success(
+                                            `Event titled ${event.title} has been successfully deleted!`
+                                        );
+                                    } else {
+                                        toast.error(
+                                            "Something went wrong! Please try again later."
+                                        );
+                                    }
+                                }}>
                                 <Button
                                     color="danger"
                                     variant="light"
