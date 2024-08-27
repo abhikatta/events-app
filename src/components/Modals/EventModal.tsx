@@ -15,6 +15,7 @@ import {
 import { Event } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const EventModal = ({
     event,
@@ -36,11 +37,18 @@ const EventModal = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     const router = useRouter();
-    console.log("Server side modal: ", typeof window === "undefined");
+
     const createEvent = async (formData: FormData) => {
         const title = formData?.get("title");
         const description = formData?.get("description");
         const priority = formData?.get("priority");
+        if (
+            title?.toString().trim() === "" ||
+            description?.toString().trim() === "" ||
+            priority?.toString().trim() === ""
+        ) {
+            toast.error(`Please fill try again.`);
+        }
         try {
             await fetch(`/api/events?date=${date}`, {
                 method: event === null ? "POST" : "PATCH",
@@ -51,9 +59,11 @@ const EventModal = ({
                     priority: priority,
                 }),
             });
-            return revalidate("/");
+            revalidate("/");
+            return true;
         } catch (error) {
             console.error(error);
+            return false;
         }
     };
 
@@ -69,7 +79,21 @@ const EventModal = ({
             <ModalContent>
                 {(onClose) => (
                     <>
-                        <form action={createEvent}>
+                        <form
+                            action={async (e) => {
+                                const success = await createEvent(e);
+                                if (success) {
+                                    toast.success(
+                                        `Successfully created event ${e.get(
+                                            "title"
+                                        )}`
+                                    );
+                                } else {
+                                    toast.error(
+                                        `Could not create event! Please try again.`
+                                    );
+                                }
+                            }}>
                             <ModalHeader>
                                 <Input
                                     label="Title"

@@ -81,9 +81,8 @@ const ProfileDropdown = ({ user }: { user: User | null }) => {
                         <DropdownItem
                             className="bg-danger text-softBg"
                             color="danger"
-                            textValue="Logout"
                             onPress={onOpen}>
-                            <p>Logout</p>
+                            Logout
                         </DropdownItem>
                     </DropdownMenu>
                 </Dropdown>

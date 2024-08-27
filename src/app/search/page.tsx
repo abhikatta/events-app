@@ -5,7 +5,6 @@ import React from "react";
 import { auth } from "../../../auth";
 
 const Page = async () => {
-    console.log("Server side search: ", typeof window === "undefined");
     try {
         const user = (await auth())?.user;
         if (!user) {
@@ -17,7 +16,6 @@ const Page = async () => {
         const events: Event[] = await res.json();
         return (
             <div>
-                search
                 <EventsTable events={events} />
             </div>
         );

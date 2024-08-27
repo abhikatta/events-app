@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "../components/navbar/navbar";
 import ThemeProvider from "../provider/themeProvider";
 import ThemeContext from "../provider/themeContext";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,6 +28,7 @@ export default function RootLayout({
                             <div className="flex flex-row min-h-screen bg-bg text-color">
                                 <Navbar />
                                 <div className="flex flex-row w-full justify-center items-center">
+                                    <Toaster />
                                     {children}
                                 </div>
                             </div>

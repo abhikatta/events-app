@@ -2,12 +2,12 @@
 import { Button, Calendar, useDisclosure } from "@nextui-org/react";
 import { Event } from "@prisma/client";
 import { DeleteIcon } from "../themeToggle/icons";
-import EventModal from "../EventModal/EventModal";
+import EventModal from "../Modals/EventModal";
 import { useEffect, useMemo, useState } from "react";
 import { parseDate } from "@internationalized/date";
 import { useRouter } from "next/navigation";
-import { revalidate } from "@/actions/server-actions";
 import { routeToHome } from "@/utils";
+import DeleteEventModal from "../Modals/DeleteEventModal";
 
 const Events = ({
     events,
@@ -18,11 +18,14 @@ const Events = ({
     events: Event[] | null;
     eventId: string | null;
 }) => {
-    console.log("Server side events: ", typeof window === "undefined");
-
     const router = useRouter();
     const searchParams = useMemo(() => new URLSearchParams(), []);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const {
+        isOpen: deleteModalIsOpen,
+        onOpen: deleteModalOnOpen,
+        onOpenChange: deleteModalOnOpenChange,
+    } = useDisclosure();
     const [date, setDate] = useState<string>(thisDate);
 
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -35,16 +38,6 @@ const Events = ({
             router.push(`?${searchParams.toString()}`);
         }
     }, [date, events, eventId, onOpen, router, searchParams]);
-
-    const deleteEvent = async (event: Event) => {
-        await fetch(`/api/events?date=${date.toString()}`, {
-            method: "DELETE",
-            body: JSON.stringify({
-                id: event.id,
-            }),
-        });
-        revalidate("/events");
-    };
 
     return (
         <>
@@ -62,7 +55,7 @@ const Events = ({
                 <h2 className="text-3xl">{date?.toString()}</h2>
                 {events?.map((item, index) => {
                     return (
-                        <div key={index} className="flex gap-2a ">
+                        <div key={index} className="flex gap-2">
                             <Button
                                 variant="ghost"
                                 onPress={() => {
@@ -75,11 +68,14 @@ const Events = ({
                                 size="md">
                                 {item.title}
                             </Button>
-                            <form action={() => deleteEvent(item)}>
-                                <button type="submit" className="h-full">
-                                    <DeleteIcon color="gray" />
-                                </button>
-                            </form>
+                            <Button isIconOnly onPress={deleteModalOnOpen}>
+                                <DeleteIcon color="gray" />
+                            </Button>
+                            <DeleteEventModal
+                                isOpen={deleteModalIsOpen}
+                                onOpenChange={deleteModalOnOpenChange}
+                                event={item}
+                            />
                         </div>
                     );
                 })}

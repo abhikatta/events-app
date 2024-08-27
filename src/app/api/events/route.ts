@@ -45,7 +45,7 @@ export const POST = async (req: Request) => {
         });
         return new NextResponse(JSON.stringify(createEvent), { status: 200 });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return new NextResponse(
             JSON.stringify({ message: `Could not create an event.` }),
             {
