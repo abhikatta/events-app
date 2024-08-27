@@ -10,9 +10,7 @@ const Page = async () => {
         if (!user) {
             return <p>Please Login or create account to continue...</p>;
         }
-        const res = await fetch(`${API_BASE_URL}/events/all`, {
-            cache: "no-store",
-        });
+        const res = await fetch(`${API_BASE_URL}/events/all`);
         const events: Event[] = await res.json();
         return (
             <div>
